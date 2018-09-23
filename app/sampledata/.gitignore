@@ -1,0 +1,6 @@
+*.aab
+*.json
+*.jks
+play-store-authentication.json
+play-store-publish.json
+app.aab

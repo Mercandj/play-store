@@ -1,0 +1,40 @@
+apply plugin: 'kotlin'
+apply plugin: 'java'
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Language
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.2.70"
+    compile 'org.json:json:20180813'
+
+    // Upload
+    compile 'com.google.apis:google-api-services-androidpublisher:v3-rev24-1.25.0'
+    // To use 'AuthorizationCodeInstalledApp'
+    compile 'com.google.oauth-client:google-oauth-client-java6:1.25.0'
+    // To use 'LocalServerReceiver'
+    compile 'com.google.oauth-client:google-oauth-client-jetty:1.25.0'
+
+    // Testing-only dependencies
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.json:json:20180813'
+}
+
+repositories {
+    mavenCentral()
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'com.mercandalli.sdk.play_store.main.MainKt'
+        )
+    }
+    doFirst {
+        from {
+            configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        }
+    }
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
+    baseName = 'play-store-1-00-00'
+}

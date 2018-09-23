@@ -1,0 +1,17 @@
+group 'play-store'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.70"
+    }
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}

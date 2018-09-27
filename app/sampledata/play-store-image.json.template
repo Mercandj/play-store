@@ -1,0 +1,11 @@
+{
+  "application_name": "TO_FILL",
+  "application_package": "TO_FILL",
+  "client_secret_path": "play-store-authentication.json",
+  "images": [
+    {
+      "path": "TO_FILL",
+      "language": "TO_FILL"
+    }
+  ]
+}

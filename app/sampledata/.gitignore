@@ -3,4 +3,5 @@
 *.jks
 play-store-authentication.json
 play-store-publish.json
+play-store-image.json
 app.aab

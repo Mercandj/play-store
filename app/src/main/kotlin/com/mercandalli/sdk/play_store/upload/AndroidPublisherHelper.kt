@@ -29,8 +29,6 @@ import java.security.GeneralSecurityException
  */
 object AndroidPublisherHelper {
 
-    internal const val MIME_TYPE_APK = "application/vnd.android.package-archive"
-
     /**
      * Directory to store user credentials
      */

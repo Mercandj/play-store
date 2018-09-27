@@ -11,14 +11,16 @@ import java.nio.file.Path
 import java.security.GeneralSecurityException
 import java.util.*
 
-object AutoApkUpload {
+object AppBundleUpload {
 
-    private const val TAG = "AutoApkUpload"
+    private const val TAG = "AppBundleUpload"
 
     /**
      * https://developers.google.com/android-publisher/api-ref/edits/bundles/upload
      */
     private const val MIME_TYPE_BUNDLE = "application/octet-stream"
+
+    const val CHANNEL_ROLLOUT = "rollout"
 
     const val ARG_FORCE = "--force"
 
@@ -26,7 +28,7 @@ object AutoApkUpload {
     fun main(args: Array<String>) {
         val configurationFilePath = parseArguments(args.toList())
 
-        val configuration = Configuration.fromFilePath(configurationFilePath)
+        val configuration = AppBundleConfiguration.fromFilePath(configurationFilePath)
         val appBundlePath = extractAppBundlePath(configuration)
         val force = isForced(args)
 
@@ -94,16 +96,15 @@ object AutoApkUpload {
         } catch (ex: GeneralSecurityException) {
             println("Exception was thrown while uploading apk : " + ex.message)
         }
-
     }
 
-    private fun extractAppBundlePath(configuration: Configuration): Path {
-        if (!configuration.getAppBundleAbsolutePath().endsWith(".aab")) {
-            throw IllegalStateException("Selected app bundle doesn't end with aab: " + configuration.getAppBundleAbsolutePath())
+    private fun extractAppBundlePath(appBundleConfiguration: AppBundleConfiguration): Path {
+        if (!appBundleConfiguration.getAppBundleAbsolutePath().endsWith(".aab")) {
+            throw IllegalStateException("Selected app bundle doesn't end with aab: " + appBundleConfiguration.getAppBundleAbsolutePath())
         }
-        val appBundle = File(configuration.getAppBundleAbsolutePath())
+        val appBundle = File(appBundleConfiguration.getAppBundleAbsolutePath())
         if (!appBundle.exists()) {
-            throw IllegalStateException("Selected app bundle doesn't exist: " + configuration.getAppBundleAbsolutePath())
+            throw IllegalStateException("Selected app bundle doesn't exist: " + appBundleConfiguration.getAppBundleAbsolutePath())
         }
         return appBundle.toPath()
     }
@@ -134,27 +135,26 @@ object AutoApkUpload {
     }
 
     private fun displayUploadInformation(
-            configuration: Configuration,
+            appBundleConfiguration: AppBundleConfiguration,
             appBundlePath: Path
     ) {
         println("\nUpload information :\n")
-        println("App name: " + configuration.getAppName())
-        println("App package: " + configuration.getAppPackage())
-        println("APK(s) directory: " + configuration.getAppBundleAbsolutePath())
-        println("Distribution channel: " + configuration.getChannel())
-        if (configuration.getChannel() == Channel.CHANNEL_ROLLOUT) {
-            println("Percentage rollout: " + configuration.getRolloutPercentage())
+        println("App name: " + appBundleConfiguration.getAppName())
+        println("App package: " + appBundleConfiguration.getAppPackage())
+        println("APK(s) directory: " + appBundleConfiguration.getAppBundleAbsolutePath())
+        println("Distribution channel: " + appBundleConfiguration.getChannel())
+        if (appBundleConfiguration.getChannel() == CHANNEL_ROLLOUT) {
+            println("Percentage rollout: " + appBundleConfiguration.getRolloutPercentage())
         }
-
         println("\nYou are about to upload appBundle" + appBundlePath.fileName + ".")
     }
 
     private fun displayUploadData(
-            configuration: Configuration,
+            appBundleConfiguration: AppBundleConfiguration,
             appVersionCode: Long?
     ) {
         println("You will upload app bundle with version code " +
-                appVersionCode + " to the " + configuration.getChannel() + " channel.")
+                appVersionCode + " to the " + appBundleConfiguration.getChannel() + " channel.")
     }
 
     private fun confirmRelease(message: String): Boolean {

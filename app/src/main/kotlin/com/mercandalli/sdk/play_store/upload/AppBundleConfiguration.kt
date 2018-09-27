@@ -5,7 +5,7 @@ import org.json.JSONObject
 import java.io.File
 import java.lang.IllegalStateException
 
-internal class Configuration(
+internal class AppBundleConfiguration(
 
         private val configurationFolderAbsolutePath: String,
 
@@ -36,10 +36,19 @@ internal class Configuration(
 
     companion object {
 
-        fun fromFilePath(configurationFilePath: String): Configuration {
+        fun fromFilePath(configurationFilePath: String): AppBundleConfiguration {
             val file = File(configurationFilePath)
             if (!file.exists()) {
-                throw IllegalStateException("File does not exist. configurationFilePath: $configurationFilePath")
+                throw IllegalStateException("File does not exist. configurationFilePath: $configurationFilePath.\n\n" +
+                        "Format of the json file:\n\n" +
+                        "{\n" +
+                        "  \"application_name\": \"TO_FILL\",\n" +
+                        "  \"application_package\": \"TO_FILL\",\n" +
+                        "  \"channel\": \"alpha\",\n" +
+                        "  \"rollout_percentage\": \"0.1\",\n" +
+                        "  \"app_bundle_path\": \"app.aab\",\n" +
+                        "  \"client_secret_path\": \"play-store-authentication.json\"\n" +
+                        "}")
             }
             val jsonObject = JSONObject(file.readText())
             if (!jsonObject.has("application_name")) {
@@ -54,7 +63,7 @@ internal class Configuration(
             if (!jsonObject.has("rollout_percentage")) {
                 throw IllegalStateException("You should provide 'rollout_percentage' with a value (inside ]0;1]) in the configuration file")
             }
-            if (jsonObject.getString("channel") == Channel.CHANNEL_ROLLOUT &&
+            if (jsonObject.getString("channel") == AppBundleUpload.CHANNEL_ROLLOUT &&
                     jsonObject.getDouble("rollout_percentage") == 0.0) {
                 throw IllegalStateException("You should provide 'rollout_percentage' with a value (inside ]0;1]) in the configuration file")
             }
@@ -64,7 +73,7 @@ internal class Configuration(
             if (!jsonObject.has("client_secret_path")) {
                 throw IllegalStateException("You should provide 'client_secret_path' with a value in the configuration file")
             }
-            return Configuration(
+            return AppBundleConfiguration(
                     file.parentFile.absolutePath,
                     jsonObject.getString("application_name"),
                     jsonObject.getString("application_package"),

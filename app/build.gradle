@@ -5,7 +5,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     // Language
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.2.70"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.2.71"
     compile 'org.json:json:20180813'
 
     // Upload
@@ -36,5 +36,5 @@ jar {
         }
     }
     exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
-    baseName = 'play-store-1-00-00'
+    baseName = 'play-store-1-00-01'
 }

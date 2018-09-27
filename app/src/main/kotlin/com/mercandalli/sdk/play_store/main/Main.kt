@@ -1,15 +1,15 @@
 package com.mercandalli.sdk.play_store.main
 
-import com.mercandalli.sdk.play_store.upload.AutoApkUpload
+import com.mercandalli.sdk.play_store.log.Log
 
 fun main(args: Array<String>) {
-    val shouldAddDefaultJsonPath = args.isEmpty() || args.size == 1 && args[0] == AutoApkUpload.ARG_FORCE
-    val argsList = if (shouldAddDefaultJsonPath) {
-        val list = ArrayList(args.toList())
-        list.add("./play-store-publish.json")
-        list
-    } else {
-        args.toList()
+    val argsList = args.toMutableList()
+    if (argsList.contains("--image")) {
+        argsList.remove("--image")
+        Log.d("Main", "Upload images. Add --force to avoid check.")
+        MainImageUpload.start(argsList)
+        return
     }
-    MainStart().start(argsList)
+    Log.d("Main", "Upload appBundle. Add --force to avoid check.")
+    MainAppBundleUpload.start(argsList)
 }

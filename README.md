@@ -1,11 +1,11 @@
 # Repo to publish App Bundle on the play store
 
-## Setup stand alone tool
+### Setup stand alone tool
 
 - Build jar with `./gradlew app:jar`. Output here: `app/build/libs/play-store.jar`
 - Launch `java -jar play-store.jar play-store-publish.json` where the json format is defined here `app/sampledata/`
 
-## Setup for IntelliJ Idea IDE with sampledata
+### Setup for IntelliJ Idea IDE with sampledata
 
 - Remove .template and replace TO_FILL in files inside `app/sampledata/` folder.
 - Add your app.aab in `app/sampledata/`
@@ -15,9 +15,9 @@ Based on https://github.com/googlesamples/android-play-publisher-api/tree/master
 
 ----
 
-# Changelog
+## Changelog
 
-## Version 1.00.01 (WorkInProgress)
+### Version 1.00.01
 
 Feature:
 - Upload app bundle to the store.
@@ -62,7 +62,7 @@ For example, to select Latin American Spanish, pass "es-419".
 
 ----
 
-## Version 1.00.00
+### Version 1.00.00
 
 Feature:
 - Upload app bundle to the store.

@@ -5,11 +5,11 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     // Language
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.2.71"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.31"
     compile 'org.json:json:20180813'
 
     // Upload
-    compile 'com.google.apis:google-api-services-androidpublisher:v3-rev24-1.25.0'
+    compile 'com.google.apis:google-api-services-androidpublisher:v3-rev90-1.25.0'
     // To use 'AuthorizationCodeInstalledApp'
     compile 'com.google.oauth-client:google-oauth-client-java6:1.25.0'
     // To use 'LocalServerReceiver'

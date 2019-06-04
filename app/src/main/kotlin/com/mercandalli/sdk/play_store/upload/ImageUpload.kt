@@ -35,19 +35,24 @@ object ImageUpload {
             }
         }
 
+        val applicationName = configuration.getAppName()
+        val clientSecretsPath = configuration.getClientSecretAbsolutePath()
         try {
             // Create the API service.
             val service = AndroidPublisherHelper.init(
-                    configuration.getAppName(),
-                    configuration.getClientSecretAbsolutePath()
+                    applicationName,
+                    clientSecretsPath
             )
             for (image in configuration.getImages()) {
-                if (uploadImage(service, configuration, image, force)) return
+                val uploadImage = uploadImage(service, configuration, image, force)
+                if (uploadImage) {
+                    return
+                }
             }
         } catch (ex: IOException) {
-            println("Exception was thrown while uploading apk : " + ex.message)
+            Log.e(TAG, "Exception was thrown while uploading images : " + ex.message)
         } catch (ex: GeneralSecurityException) {
-            println("Exception was thrown while uploading apk : " + ex.message)
+            Log.e(TAG, "Exception was thrown while uploading images : " + ex.message)
         }
     }
 
@@ -81,9 +86,9 @@ object ImageUpload {
                 )
         updateTrackRequest.execute()
         if (force) {
-            println("Creation of a new release forced, channel: ${image.language}.")
+            Log.e(TAG, "Creation of a new release forced, channel: ${image.language}.")
         } else if (!confirmRelease("Confirm creation of a new release?")) {
-            println("AppBundle upload has been canceled, channel: ${image.language}.")
+            Log.e(TAG, "AppBundle upload has been canceled, channel: ${image.language}.")
             return true
         }
 

@@ -26,46 +26,56 @@ object AppBundleUpload {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        val configurationFilePath = parseArguments(args.toList())
+        val configurationFilePath = extractConfigurationFilePath(args.toList())
+        if (configurationFilePath.isEmpty()) {
+            Log.e(TAG, "configurationFilePath is empty")
+            return
+        }
+        val force = extractIsForced(args)
+        Log.d(TAG, "configurationFilePath: $configurationFilePath")
 
-        val configuration = AppBundleConfiguration.fromFilePath(configurationFilePath)
-        val appBundlePath = extractAppBundlePath(configuration)
-        val force = isForced(args)
+        val appBundleConfiguration = AppBundleConfiguration.fromFilePath(configurationFilePath)
+        val appBundlePath = extractAppBundlePath(appBundleConfiguration)
 
-        displayUploadInformation(configuration, appBundlePath)
+        displayUploadInformation(
+                appBundleConfiguration,
+                appBundlePath
+        )
         if (force) {
-            println("Upload forced.")
-        } else {
-            if (!confirmRelease("\nStart to upload?")) {
-                println("Upload has been canceled.")
-                return
-            }
+            Log.d(TAG, "Upload forced.")
+        } else if (!confirmRelease("\nStart to upload?")) {
+            Log.d(TAG, "Upload has been canceled.")
+            return
         }
 
+        val applicationName = appBundleConfiguration.getAppName()
+        val clientSecretsPath = appBundleConfiguration.getClientSecretAbsolutePath()
+        val appPackage = appBundleConfiguration.getAppPackage()
+        val channel = appBundleConfiguration.getChannel()
         try {
             // Create the API service.
             val service = AndroidPublisherHelper.init(
-                    configuration.getAppName(),
-                    configuration.getClientSecretAbsolutePath()
+                    applicationName,
+                    clientSecretsPath
             )
             val edits = service.edits()
 
             // Create a new edit to make changes to your listing.
             val editRequest = edits.insert(
-                    configuration.getAppPackage(),
+                    appPackage,
                     null
             )
             val edit = editRequest.execute()
             val editId = edit.id
             val appVersionCode = uploadAppBundle(
-                    configuration.getAppPackage(),
+                    appPackage,
                     edits,
                     editId,
                     appBundlePath
             )
             val trackRelease = TrackRelease()
-            if (configuration.getChannel() == "rollout") {
-                trackRelease.userFraction = configuration.getRolloutPercentage()
+            if (channel == "rollout") {
+                trackRelease.userFraction = appBundleConfiguration.getRolloutPercentage()
             }
             trackRelease.versionCodes = Collections.singletonList(appVersionCode)
             trackRelease.status = "completed"
@@ -73,28 +83,31 @@ object AppBundleUpload {
             val updateTrackRequest = edits
                     .tracks()
                     .update(
-                            configuration.getAppPackage(),
+                            appPackage,
                             editId,
-                            configuration.getChannel(),
+                            channel,
                             content
                     )
             updateTrackRequest.execute()
-            displayUploadData(configuration, appVersionCode)
+            displayUploadData(appBundleConfiguration, appVersionCode)
 
             if (force) {
-                println("Creation of a new release forced, channel: ${configuration.getChannel()}.")
+                println("Creation of a new release forced, channel: $channel.")
             } else if (!confirmRelease("Confirm creation of a new release?")) {
-                println("AppBundle upload has been canceled, channel: ${configuration.getChannel()}.")
+                println("AppBundle upload has been canceled, channel: $channel.")
                 return
             }
 
             // Commit changes for edit.
-            val commitRequest = edits.commit(configuration.getAppPackage(), editId)
+            val commitRequest = edits.commit(
+                    appPackage,
+                    editId
+            )
             commitRequest.execute()
         } catch (ex: IOException) {
-            println("Exception was thrown while uploading apk : " + ex.message)
+            Log.e(TAG, "Exception was thrown while uploading apk : " + ex.message)
         } catch (ex: GeneralSecurityException) {
-            println("Exception was thrown while uploading apk : " + ex.message)
+            Log.e(TAG, "Exception was thrown while uploading apk : " + ex.message)
         }
     }
 
@@ -138,15 +151,15 @@ object AppBundleUpload {
             appBundleConfiguration: AppBundleConfiguration,
             appBundlePath: Path
     ) {
-        println("\nUpload information :\n")
-        println("App name: " + appBundleConfiguration.getAppName())
-        println("App package: " + appBundleConfiguration.getAppPackage())
-        println("APK(s) directory: " + appBundleConfiguration.getAppBundleAbsolutePath())
-        println("Distribution channel: " + appBundleConfiguration.getChannel())
+        Log.d(TAG, "\nUpload information :\n")
+        Log.d(TAG, "App name: " + appBundleConfiguration.getAppName())
+        Log.d(TAG, "App package: " + appBundleConfiguration.getAppPackage())
+        Log.d(TAG, "APK(s) directory: " + appBundleConfiguration.getAppBundleAbsolutePath())
+        Log.d(TAG, "Distribution channel: " + appBundleConfiguration.getChannel())
         if (appBundleConfiguration.getChannel() == CHANNEL_ROLLOUT) {
-            println("Percentage rollout: " + appBundleConfiguration.getRolloutPercentage())
+            Log.d(TAG, "Percentage rollout: " + appBundleConfiguration.getRolloutPercentage())
         }
-        println("\nYou are about to upload appBundle" + appBundlePath.fileName + ".")
+        Log.d(TAG, "\nYou are about to upload appBundle" + appBundlePath.fileName + ".")
     }
 
     private fun displayUploadData(
@@ -170,7 +183,7 @@ object AppBundleUpload {
         return !(answer == null || answer == "N")
     }
 
-    private fun parseArguments(args: List<String>): String {
+    private fun extractConfigurationFilePath(args: List<String>): String {
         val argsCopy = ArrayList(args)
         if (argsCopy.contains(ARG_FORCE)) {
             argsCopy.remove(ARG_FORCE)
@@ -182,7 +195,7 @@ object AppBundleUpload {
         return argsCopy[0]
     }
 
-    private fun isForced(args: Array<String>) = args.contains(ARG_FORCE)
+    private fun extractIsForced(args: Array<String>) = args.contains(ARG_FORCE)
 
     private fun println(message: String) {
         Log.d(TAG, message)

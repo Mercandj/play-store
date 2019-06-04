@@ -3,6 +3,7 @@ package com.mercandalli.sdk.play_store.main
 import com.mercandalli.sdk.play_store.log.Log
 
 fun main(args: Array<String>) {
+    Log.d("Main", "Args: ${args.joinToString(", ")}")
     val argsList = args.toMutableList()
     if (argsList.contains("--image")) {
         argsList.remove("--image")

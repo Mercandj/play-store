@@ -17,6 +17,10 @@ Based on https://github.com/googlesamples/android-play-publisher-api/tree/master
 
 ## Changelog
 
+### Version 1.00.02
+
+Improve logs
+
 ### Version 1.00.01
 
 Feature:

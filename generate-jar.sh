@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 BASEDIR=$(dirname "$0")
-JARNAME="play-store-1-00-01.jar"
+JARNAME="play-store.jar"
 
 echo "[PlayStore][GenerateJar] Script base directory: $BASEDIR"
 

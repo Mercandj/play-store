@@ -104,10 +104,20 @@ object AppBundleUpload {
                     editId
             )
             commitRequest.execute()
-        } catch (ex: IOException) {
-            Log.e(TAG, "Exception was thrown while uploading apk : " + ex.message)
-        } catch (ex: GeneralSecurityException) {
-            Log.e(TAG, "Exception was thrown while uploading apk : " + ex.message)
+        } catch (ioException: IOException) {
+            val message = ioException.message
+            val stackTrace = ioException.stackTrace.joinToString("\n")
+            Log.e(TAG, "Exception was thrown while uploading apk")
+            Log.e(TAG, "Message: $message")
+            Log.e(TAG, "StackTrace: $stackTrace")
+        } catch (generalSecurityException: GeneralSecurityException) {
+            val message = generalSecurityException.message
+            val cause = generalSecurityException.cause
+            val stackTrace = generalSecurityException.stackTrace.joinToString("\n")
+            Log.e(TAG, "Exception was thrown while uploading apk")
+            Log.e(TAG, "Message: $message")
+            Log.e(TAG, "Cause: $cause")
+            Log.e(TAG, "StackTrace: $stackTrace")
         }
     }
 

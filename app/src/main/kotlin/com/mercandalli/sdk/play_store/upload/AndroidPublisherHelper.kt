@@ -93,6 +93,9 @@ object AndroidPublisherHelper {
 
         // load client secrets
         val file = File(clientSecretsPath)
+        if (!file.exists()) {
+            throw IllegalStateException("Cannot find file: ${file.absolutePath} with clientSecretsPath: $clientSecretsPath")
+        }
         val resourceAsStream = FileInputStream(file)
 
         val clientSecrets = GoogleClientSecrets.load(
@@ -115,8 +118,7 @@ object AndroidPublisherHelper {
         return AuthorizationCodeInstalledApp(
                 flow,
                 LocalServerReceiver()
-        )
-                .authorize(INST_APP_USER_ID)
+        ).authorize(INST_APP_USER_ID)
     }
 
     @Throws(GeneralSecurityException::class, IOException::class)

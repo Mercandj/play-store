@@ -36,5 +36,5 @@ jar {
         }
     }
     exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
-    baseName = 'play-store-1-00-01'
+    baseName = "play-store-$rootProject.ext.version"
 }

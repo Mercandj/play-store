@@ -1,5 +1,10 @@
+rootProject.ext {
+    version = '1.00.02'
+}
+
+
 group 'play-store'
-version '1.00.02'
+version rootProject.ext.version
 
 buildscript {
     repositories {
